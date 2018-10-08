@@ -5,45 +5,52 @@
         <div class="card">
           <div class="card-body">
 
-            <div class="row">
-              <div class="col-md-12">
-                <form method="post" @submit.prevent="enterChat">
-                  <div class="form-group">
-                    <div class='input-group'>
-                      <input type='text' class="form-control" v-model="username" placeholder="Enter your username">
-
-                      <div class='input-group-append'>
-                        <button class='btn btn-primary'>Enter</button>
-                      </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-            </div>
-
-            <div class="row">
+            <div class="row" v-if="entered">
               <div class="col-md-12">
                 <div class="card">
                   <div class="card-header">Chatbox</div>
                   <div class="card-body">
-                    <dl>
-                      <dt>mezie</dt>
-                      <dd>Hi</dd>
-                      <dt>bode</dt>
-                      <dd>Hey!</dd>
+                    <dl
+                      v-for="(chat, id) in chats"
+                      :key="id"
+                    >
+                      <dt>{{ chat.from }}</dt>
+                      <dd>{{ chat.message }}</dd>
                     </dl>
-                    <hr>
-                    <form method="post" @submit.prevent="sendMessage">
-                      <div class='input-group'>
-                        <input type='text' class="form-control" v-model="message" placeholder="Type your message...">
 
-                        <div class='input-group-append'>
-                          <button class='btn btn-primary'>Send</button>
-                        </div>
-                      </div>
-                    </form>
+                    <hr>
+
+
+                    <input
+                      type='text'
+                      class="form-control"
+                      placeholder="Type your message..."
+                      v-model="message"
+                      @keyup.enter="sendMessage"
+                    >
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div class="row" v-else>
+              <div class="col-md-12">
+                <form method="post" @submit.prevent="enterChat">
+                  <div class="form-group">
+                    <div class='input-group'>
+                      <input
+                        type='text'
+                        class="form-control"
+                        placeholder="Enter your username"
+                        v-model="username"
+                      >
+
+                      <div class='input-group-append'>
+                        <button class='btn btn-primary' @click="enterChat">Enter</button>
+                      </div>
+                    </div>
+                  </div>
+                </form>
               </div>
             </div>
 
@@ -55,19 +62,52 @@
 </template>
 
 <script>
+import {
+  CHATS_QUERY,
+  SEND_MESSAGE_MUTATION,
+  MESSAGE_SENT_SUBSCRIPTION,
+} from '@/graphql';
+
 export default {
   name: 'app',
   data() {
     return {
       username: '',
-      messgage: '',
+      message: '',
+      entered: false,
     };
+  },
+  apollo: {
+    chats: {
+      query: CHATS_QUERY,
+      subscribeToMore: {
+        document: MESSAGE_SENT_SUBSCRIPTION,
+        updateQuery: (previousData, { subscriptionData }) => {
+          return {
+            chats: [...previousData.chats, subscriptionData.data.messageSent],
+          };
+        },
+      },
+    },
   },
   methods: {
     enterChat() {
-      alert(this.username);
+      this.entered = !!this.username != '';
     },
-    sendMessage() {},
+
+    async sendMessage() {
+      const message = this.message;
+
+      this.message = '';
+
+      await this.$apollo.mutate({
+        mutation: SEND_MESSAGE_MUTATION,
+        variables: {
+          from: this.username,
+          message,
+        },
+      });
+    },
   },
 };
 </script>
