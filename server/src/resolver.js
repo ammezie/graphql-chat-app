@@ -11,7 +11,7 @@ const resolvers = {
 
   Mutation: {
     sendMessage (root, { from, message }, { pubsub }) {
-      const chat = { from, message }
+      const chat = { id: chats.length + 1, from, message }
 
       chats.push(chat)
       pubsub.publish('CHAT_CHANNEL', { messageSent: chat })
@@ -23,7 +23,7 @@ const resolvers = {
   Subscription: {
     messageSent: {
       subscribe: (root, args, { pubsub }) => {
-        return pubsub.asyncIterator([CHAT_CHANNEL])
+        return pubsub.asyncIterator(CHAT_CHANNEL)
       }
     }
   }

@@ -1,5 +1,6 @@
 const typeDefs = `
   type Chat {
+    id: Int!
     from: String!
     message: String!
   }
