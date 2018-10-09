@@ -1,13 +1,13 @@
 {
   "name": "graphql-chat-app",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Building realtime app with GraphQL subscriptions",
+  "main": "src/index.js",
   "scripts": {
     "dev": "nodemon src/index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Chimezie Enyinnaya",
   "license": "ISC",
   "dependencies": {
     "graphql-yoga": "^1.16.2"

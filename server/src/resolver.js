@@ -22,7 +22,7 @@ const resolvers = {
 
   Subscription: {
     messageSent: {
-      subscribe: (root, args, { pubsub }) => {
+      subscribe (root, args, { pubsub }) {
         return pubsub.asyncIterator(CHAT_CHANNEL)
       }
     }
