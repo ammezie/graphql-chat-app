@@ -1,6 +1,6 @@
 # graphql-chat-app
 
-Building realtime app with GraphQL subscriptions
+Building realtime app with GraphQL subscriptions - [https://pusher.com/tutorials/chat-graphql-subscriptions](https://pusher.com/tutorials/chat-graphql-subscriptions)
 
 ## Getting Started
 
